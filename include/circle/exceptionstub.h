@@ -2,7 +2,7 @@
 // exceptionstub.h
 //
 // Circle - A C++ bare metal environment for Raspberry Pi
-// Copyright (C) 2014-2017  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2014-2018  R. Stange <rsta2@o2online.de>
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #ifndef _circle_exceptionstub_h
 #define _circle_exceptionstub_h
 
+#include <circle/sysconfig.h>
 #include <circle/types.h>
 
 #ifdef __cplusplus
@@ -28,6 +29,7 @@ extern "C" {
 
 #define ARM_OPCODE_BRANCH(distance)	(0xEA000000 | (distance))
 #define ARM_DISTANCE(from, to)		((u32 *) &(to) - (u32 *) &(from) - 2)
+#define ARM_BRANCH_TARGET(from, opcode)	((u32 *) &(from) + ((opcode) & 0xFFFFFF) + 2)
 
 struct TExceptionTable
 {
@@ -76,6 +78,10 @@ struct TFIQData
 };
 
 extern TFIQData FIQData;
+
+#ifdef USE_ALPHA_STUB_AT
+extern u32 ChainIRQHandler;
+#endif
 
 void UndefinedInstructionStub (void);
 void PrefetchAbortStub (void);

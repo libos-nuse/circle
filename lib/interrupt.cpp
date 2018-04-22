@@ -2,7 +2,7 @@
 // interrupt.cpp
 //
 // Circle - A C++ bare metal environment for Raspberry Pi
-// Copyright (C) 2014-2017  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2014-2018  R. Stange <rsta2@o2online.de>
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -66,6 +66,10 @@ CInterruptSystem::~CInterruptSystem (void)
 boolean CInterruptSystem::Initialize (void)
 {
 	TExceptionTable *pTable = (TExceptionTable *) ARM_EXCEPTION_TABLE_BASE;
+#ifdef USE_ALPHA_STUB_AT
+	assert ((pTable->IRQ >> 24) == 0xEA);
+	ChainIRQHandler = (u32) ARM_BRANCH_TARGET (pTable->IRQ, pTable->IRQ);
+#endif
 	pTable->IRQ = ARM_OPCODE_BRANCH (ARM_DISTANCE (pTable->IRQ, IRQStub));
 #ifndef USE_RPI_STUB_AT
 	pTable->FIQ = ARM_OPCODE_BRANCH (ARM_DISTANCE (pTable->FIQ, FIQStub));

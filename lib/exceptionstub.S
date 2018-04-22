@@ -2,7 +2,7 @@
  * exceptionstub.S
  *
  * Circle - A C++ bare metal environment for Raspberry Pi
- * Copyright (C) 2014-2017  R. Stange <rsta2@o2online.de>
+ * Copyright (C) 2014-2018  R. Stange <rsta2@o2online.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,10 +74,27 @@ UndefinedInstructionStub:
  */
 	.globl	IRQStub
 IRQStub:
+#ifdef USE_ALPHA_STUB_AT
+	stmfd	sp!, {r0}			/* save r0 */
+	ldr	r0, =ARM_IC_IRQ_PENDING_1	/* check if AUX IRQ (Mini UART) is pending */
+	ldr	r0, [r0]
+	tst	r0, #(1 << 29)
+	ldmfd	sp!, {r0}			/* restore r0 */
+	bne	1f				/* yes: jump to chain handler */
+						/* no: normal IRQ handling */
+#endif
 	sub	lr, lr, #4			/* lr: return address */
 	stmfd	sp!, {r0-r12, lr}		/* save r0-r12 and return address */
 	bl	InterruptHandler
 	ldmfd	sp!, {r0-r12, pc}^		/* restore registers and return */
+#ifdef USE_ALPHA_STUB_AT
+1:	sub	sp, sp, #4			/* reserve room on stack for pc */
+	stmfd	sp!, {r0}			/* save r0 */
+	ldr	r0, =ChainIRQHandler		/* store chain handler address as pc */
+	ldr	r0, [r0]
+	str	r0, [sp, #4]
+	ldmfd	sp!, {r0, pc}			/* restore r0, jump to Alpha stub IRQ handler */
+#endif
 
 /*
  * FIQ stub
@@ -123,5 +140,11 @@ FIQStub:
 FIQData:					/* matches TFIQData: */
 	.word	0				/* pHandler */
 	.word	0				/* pParam */
+
+#ifdef USE_ALPHA_STUB_AT
+	.globl	ChainIRQHandler
+ChainIRQHandler:
+	.word	0
+#endif
 
 /* End */
