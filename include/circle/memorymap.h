@@ -22,6 +22,17 @@
 #ifndef _circle_memorymap_h
 #define _circle_memorymap_h
 
+#ifdef __ASSEMBLER__
+#define CIRCLE_DECLARE_SYMBOL(symbol) .extern (symbol)
+#define CIRCLE_ADDRESS_OF(symbol) (symbol)
+#else
+#define CIRCLE_DECLARE_SYMBOL(symbol) extern char (symbol)
+#define CIRCLE_ADDRESS_OF(symbol) reinterpret_cast<int>(&(symbol))
+#endif
+
+CIRCLE_DECLARE_SYMBOL(__kernel_start);
+CIRCLE_DECLARE_SYMBOL(__kernel_end);
+
 #ifndef MEGABYTE
 	#define MEGABYTE	0x100000
 #endif
@@ -37,8 +48,8 @@
 #define PAGE_TABLE1_SIZE	0x4000
 #define PAGE_RESERVE		(4 * MEGABYTE)
 
-#define MEM_KERNEL_START	0x8000
-#define MEM_KERNEL_END		(MEM_KERNEL_START + KERNEL_MAX_SIZE)
+#define MEM_KERNEL_START	CIRCLE_ADDRESS_OF(__kernel_start)
+#define MEM_KERNEL_END		CIRCLE_ADDRESS_OF(__kernel_end)
 #define MEM_KERNEL_STACK	(MEM_KERNEL_END + KERNEL_STACK_SIZE)		// expands down
 #if RASPPI == 1
 #define MEM_ABORT_STACK		(MEM_KERNEL_STACK + EXCEPTION_STACK_SIZE)	// expands down

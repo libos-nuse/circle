@@ -24,6 +24,8 @@
  */
 #include <circle/sysconfig.h>
 
+.extern sysinit
+
 /*
  * Helper macro to enter SVC mode cleanly and mask interrupts. reg is
  * a scratch register for the macro to overwrite.
@@ -69,7 +71,9 @@ _start:
 	ldr	sp, =MEM_ABORT_STACK
 	cps	#0x1F				/* set system mode */
 	ldr	sp, =MEM_KERNEL_STACK
-	b	sysinit
+	bl	sysinit
+	ldr	sp, =stack_top
+	bl	__libc_start_main
 
 #if RASPPI != 1
 	

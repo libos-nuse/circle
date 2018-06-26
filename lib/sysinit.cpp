@@ -147,35 +147,11 @@ void sysinit (void)
 
 	vfpinit ();
 
-	// clear BSS
-	extern unsigned char __bss_start;
-	extern unsigned char _end;
-	for (unsigned char *pBSS = &__bss_start; pBSS < &_end; pBSS++)
-	{
-		*pBSS = 0;
-	}
-
 	CMachineInfo MachineInfo;
 
 #if STDLIB_SUPPORT >= 2
 	CMemorySystem Memory;
 #endif
-
-	// call construtors of static objects
-	extern void (*__init_start) (void);
-	extern void (*__init_end) (void);
-	for (void (**pFunc) (void) = &__init_start; pFunc < &__init_end; pFunc++)
-	{
-		(**pFunc) ();
-	}
-
-	extern int main (void);
-	if (main () == EXIT_REBOOT)
-	{
-		reboot ();
-	}
-
-	halt ();
 }
 
 #ifdef ARM_ALLOW_MULTI_CORE

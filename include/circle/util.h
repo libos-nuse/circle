@@ -29,6 +29,7 @@ extern "C" {
 #if STDLIB_SUPPORT >= 2
 
 #define memcmp		circle_memcmp
+#define memset		circle_memset
 #define strlen		circle_strlen
 #define strcmp		circle_strcmp
 #define strcasecmp	circle_strcasecmp
