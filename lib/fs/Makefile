@@ -26,4 +26,8 @@ libfs.a: $(OBJS)
 	rm -f $@
 	$(AR) cr $@ $(OBJS)
 
+libfs.o: $(OBJS)
+	rm -f libfs.o
+	$(LD) -r $(OBJS) -o libfs.o
+
 include $(CIRCLEHOME)/Rules.mk

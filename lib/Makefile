@@ -45,3 +45,7 @@ endif
 libcircle.a: $(OBJS)
 	rm -f libcircle.a
 	$(AR) cr libcircle.a $(OBJS)
+
+libcircle.o: $(OBJS)
+	rm -f libcircle.o
+	$(LD) -r $(OBJS) -o libcircle.o

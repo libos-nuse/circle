@@ -33,4 +33,8 @@ libusb.a: $(OBJS)
 	rm -f libusb.a
 	$(AR) cr libusb.a $(OBJS)
 
+libusb.o: $(OBJS)
+	rm -f libusb.o
+	$(LD) -r $(OBJS) -o libusb.o
+
 include $(CIRCLEHOME)/Rules.mk

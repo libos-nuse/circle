@@ -33,4 +33,8 @@ libnet.a: $(OBJS)
 	rm -f libnet.a
 	$(AR) cr libnet.a $(OBJS)
 
+libnet.o: $(OBJS)
+	rm -f libnet.o
+	$(LD) -r $(OBJS) -o libnet.o
+
 include $(CIRCLEHOME)/Rules.mk
